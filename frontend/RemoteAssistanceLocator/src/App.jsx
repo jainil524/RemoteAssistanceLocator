@@ -1,11 +1,12 @@
+import React from 'react';
+import ProfileCard from './ProfileCard';
 
 function App() {
-
   return (
-    <>
-      <h1>Remote Assistance Locator</h1>
-    </>
-  )
+    <div className="App">
+      <ProfileCard />
+    </div>
+  );
 }
 
-export default App
+export default App;
