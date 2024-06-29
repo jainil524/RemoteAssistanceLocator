@@ -5,6 +5,7 @@ const notificationSchema = new Schema({
     user: { type: Schema.Types.ObjectId, ref: 'User' },
     serviceProvider: { type: Schema.Types.ObjectId, ref: 'User' },
     message: { type: String, required: true },
+    NotificationType: { type: String, enum: ['otp','system','normal'], default: 'normal' ,required: true },
     createdAt: { type: Date, default: Date.now }
 });
 
