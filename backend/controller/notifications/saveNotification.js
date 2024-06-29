@@ -1,6 +1,7 @@
 const connectDB = require('../../model/dbconnecion');
 const Notification = require('../../model/Notifications/Notifications');
 const User = require('../../model/Users/User');
+const sendEmail = require('../Email/sendEmail'); // Import sendEmail function
 
 const storeData = async (data) => {
   await connectDB();
@@ -30,6 +31,11 @@ const storeData = async (data) => {
 
     const result = await notification.save();
     console.log(`New document inserted with _id: ${result._id}`);
+
+    // Send emails to user and serviceProvider
+    await sendEmail(NotificationType, message, userObj.email);
+    await sendEmail(NotificationType, message, serviceProviderObj.email);
+
   } catch (error) {
     console.error('Error storing data:', error);
   }
@@ -37,8 +43,8 @@ const storeData = async (data) => {
 
 // Example new data
 const newData = {
-  user: 'user@example.com',
-  serviceProvider: 'serviceProvider@example.com',
+  user: 'dhruv.raval.official@gmail.com',
+  serviceProvider: 'kishanrathod967956@gmail.com',
   NotificationType: 'system',
   message: 'This is a test notification'
 };
