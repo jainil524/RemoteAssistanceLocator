@@ -1,4 +1,4 @@
-# RemoteAssistanceLocator
+# Remote Assistance Locator
 
 **Creating a Remote Assistance Locator system involves integrating technologies that facilitate efficient communication, coordination, and support between users needing assistance and service providers.**
 
