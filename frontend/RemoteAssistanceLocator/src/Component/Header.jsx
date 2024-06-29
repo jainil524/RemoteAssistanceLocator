@@ -5,7 +5,7 @@ function Header() {
     return (
         <header>
             <div className="logo-conatiner">
-                <img src="src/image/logo2.png" alt=""/>
+                <img src="src/image/logo1.png" alt=""/>
             </div>
             <div className="menu">
                 <div className="item"><Link to={"/"}> Home</Link></div>

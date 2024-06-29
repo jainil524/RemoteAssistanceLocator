@@ -4,7 +4,8 @@ header {
     padding-inline: 1rem;
     align-items: center;
     height: 3rem;
-    background-color: #000;
+    background-color: white;
+    box-shadow: 3px -1px 10px 1px #888888;
 }
 
 header .menu {
@@ -28,5 +29,5 @@ header .logo-conatiner {
 }
 .menu a{
     text-decoration: none;
-    color: white;
+    color: #06c5d7;
 }
