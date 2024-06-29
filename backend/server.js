@@ -372,7 +372,7 @@ app.post("/editarrivalendtime", loginCheck, async (req, res) => {
 });
 
 // get user details of other user
-app.post("/getuserdetails", loginCheck, async (req, res) => {
+app.post("/getspecificuserdetails", loginCheck, async (req, res) => {
     console.log("sdf");
     try {
         const email = req.user.email;
