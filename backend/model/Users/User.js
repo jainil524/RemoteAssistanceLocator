@@ -23,7 +23,11 @@ const userSchema = new Schema({
         required: true
     },
     location: {
-        type: [Number], required: false // [longitude, latitude]
+        type: {
+            type: String,
+            default: 'Point'
+        },
+        coordinates: { type: [Number] }
     },
     services: {
         type: [{ type: Schema.Types.ObjectId, ref: 'Services' }],

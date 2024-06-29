@@ -64,7 +64,7 @@ app.post('/register', async (req, res) => {
     try {
 
         // 2. Destructure sanitized data
-        const { name, email, phone, password, role, loc } = req.body;
+        const { name, email, phone, password, role, location } = req.body;
 
         // 3. Check for existing user (using async/await for cleaner handling)
         const existingUser = await User.findOne({ email: email });
@@ -72,10 +72,10 @@ app.post('/register', async (req, res) => {
             res.status(400).json({status: "error",message: 'Email already in use'});
         }
 
-        let hashedPassword = hashPassword(password);
+        let hashedPassword = await hashPassword(password);
 
         // 5. Create new user (using async/await for database operations)
-        const newUser = new User({ name, email, phone, password: hashedPassword, role, loc });
+        const newUser = new User({ name, email, phone, password: hashedPassword, role, location });
         await newUser.save();
 
         // 6. Send success response (optionally with a JWT or other auth token)
@@ -112,7 +112,32 @@ app.post('/getuserdetails', loginCheck, async (req, res) => {
 
 });
 
-// protected route
+// request a service from service provider who is nearby to the service requester user
+app.post('/requestservice', loginCheck, async (req, res) => {
+    try {
+
+        // 2. Get user ID from JWT
+        const email = req.user.email;
+
+        // 3. Find user by ID (using async/await for database operations)
+        const user = await User.findOne(email);
+        if (!user) {
+            res.status(404);
+            res.json({status: "error",message: 'User not found'});
+        }
+
+
+
+        // 4. Send success response with user details
+        res.status(200);
+        res.json({status: "success",data: user});
+    } catch (error) {
+        console.error(error);
+        res.status(500);
+        res.json({status: "error",message: 'Internal server error'});
+    }
+
+});
 
 
 app.listen(PORT, () => {
