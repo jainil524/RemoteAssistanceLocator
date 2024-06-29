@@ -4,9 +4,9 @@ const PORT = 3000;
 
 const bodyParser = require('body-parser');
 const jwt = require('jsonwebtoken');
-const connectDB = require('./model/dbconnection');
+const connectDB = require('./model/dbconnecion');
 
-const User = require('./model/User');
+const User = require('./model/Users/User');
 
 // Load environment variables
 require('dotenv').config();
@@ -47,6 +47,33 @@ app.use((req, res, next) => {
 // user login 
 app.post('/login', (req, res) => {
 
+    let { email, password } = req.body;
+
+    // check if user exists
+    const user = User;
+    user.findOne({ email: email }, (err, user) => {
+        if (err) {
+            res.status(500);
+            res.json({ status: 'error', error: 'Internal error please try again' });
+        } else if (!user) {
+            res.status(401);
+            res.json({ status: 'error', error: 'User does not exist' });
+        } else {
+            user.isPasswordMatch(password, user.password, (err, matched) => {
+                if (matched) {
+                    let token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
+                        expiresIn: 86400 // expires in 24 hours
+                    });
+
+                    res.status(200);
+                    res.json({ status: 'success', token: token });
+                } else {
+                    res.status(401);
+                    res.json({ status: 'error', error: 'Invalid credentials' });
+                }
+            });
+        }
+    });
 
 });
 
@@ -80,13 +107,17 @@ app.post('/register', (req, res) => {
                 loc
             });
 
+            let token = jwt.sign({ id: newUser._id }, process.env.JWT_SECRET, {
+                expiresIn: 86400 // expires in 24 hours
+            });
+
             newUser.save((err, user) => {
                 if (err) {
                     res.status(500);
                     res.json({ status: 'error', error: 'Internal error please try again' });
                 } else {
                     res.status(200);
-                    res.json({ status:'success', message: 'User created successfully' });
+                    res.json({ status:'success', token: token, message: 'User created successfully' });
                 }
             });
         }
