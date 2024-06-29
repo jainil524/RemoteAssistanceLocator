@@ -80,6 +80,10 @@ export default function SignUp() {
                         error={errors.password}
                     />
                     <button type="submit">Login</button>
+
+                    <div className="signup-footer">
+                        <p>Don't have an account? <a href="/signup">Sign Up</a></p>
+                    </div>
                 </fieldset>
             </form>
         </div>

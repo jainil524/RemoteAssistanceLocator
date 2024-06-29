@@ -149,6 +149,9 @@ export default function SignUp() {
                     </div>
 
                     <button type="submit">Register</button>
+                    <div className="signup-footer">
+                        <p>Already have an account? <a href="/login">Sign In</a></p>
+                    </div>
                 </fieldset>
             </form>
         </div>

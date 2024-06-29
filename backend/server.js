@@ -27,7 +27,11 @@ app.use(bodyParser.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cors());
 
-// Routes
+
+function decodeToken(token) {
+    return jwt.verify(token, process.env.JWT_SECRET);
+}
+
 
 // user login 
 app.post('/login', async (req, res) => {
@@ -41,17 +45,19 @@ app.post('/login', async (req, res) => {
         const user = await User.findOne({ email });
         if (!user) {
             res.status(401).json({ status: "error", message: 'No user found with this email' });
+            return;
         }
 
         // 4. Compare password hashes securely (using bcrypt)
         const isMatch = await comparePassword(password, user.password);
         if (!isMatch) {
             res.status(401).json({ status: "error", message: 'wrong password' });
+            return;
         }
 
         // 5. Generate JWT or other auth token (optional)
         // Implement JWT generation logic using a library like jsonwebtoken
-        let token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
+        let token = jwt.sign({ id: user._id, email: email }, process.env.JWT_SECRET, {
             expiresIn: 86400 // expires in 24 hours
         });
 
@@ -74,7 +80,9 @@ app.post('/register', async (req, res) => {
         // 3. Check for existing user (using async/await for cleaner handling)
         const existingUser = await User.findOne({ email: email });
         if (existingUser) {
-            res.status(400).json({ status: "error", message: 'Email already in use' });
+            res.status(400).json({ status: "error", message: 'Email already in use' });1
+            return;
+
         }
 
         let hashedPassword = await hashPassword(password);
@@ -97,20 +105,20 @@ app.post('/getuserdetails', loginCheck, async (req, res) => {
     try {
 
         // 2. Get user ID from JWT
-        const email = req.user.email;
-
+        const email = decodeToken(req.headers['authorization']).email;
         // 3. Find user by ID (using async/await for database operations)
-        const user = await User.findOne(email);
+        const user = await User.findOne({email: email });
+        // console.log(JSON.stringify(user),req.headers['authorization']);
+        
         if (!user) {
-            res.status(404);
-            res.json({ status: "error", message: 'User not found' });
+            res.status(404).json({ status: "error", message: 'User not found' });
+            return;
         }
 
         // 4. Send success response with user details
         res.status(200);
         res.json({ status: "success", data: user });
-    } catch (error) {
-        console.error(error);
+    } catch (error) {;
         res.status(500);
         res.json({ status: "error", message: 'Internal server error' });
     }
@@ -122,16 +130,17 @@ app.post('/requestservice', loginCheck, async (req, res) => {
     try {
 
         // 2. Get user ID from JWT
-        const email = req.user.email;
+        const email = decodeToken(req.headers['authorization']).email;
 
         // 3. Find user by ID (using async/await for database operations)
-        const user = await User.findOne(email);
+        const user = await User.findOne({email});
         if (!user) {
             res.status(404).json({ status: "error", message: 'User not found' });
+            return;
         }
 
         // 4. Create new service request (using async/await for database operations)
-        const { location, date, serviceTaken } = req.body;
+        let { location, date, serviceTaken } = req.body;
         location.type = 'Point';
         location.coordinates = [location.longitude, location.latitude];
 
@@ -160,19 +169,23 @@ app.post('/getallservicerequests', loginCheck, async (req, res) => {
     try {
 
         // 2. Get user ID from JWT
-        const email = req.user.email;
+        const email = decodeToken(req.headers['authorization']).email;
 
         // 3. Find user by ID (using async/await for database operations)
-        const user = await User.findOne(email);
+        const user = await User.findOne({email});
         console.log(user);
         if (!user) {
             res.status(404).json({ status: "error", message: 'User not found' });
+            return;
+
         }
 
         // 4. Find all service requests (using async/await for database operations)
         const serviceRequests = await ServiceRequest.find({ user: user._id });
         if (!serviceRequests) {
             res.status(404).json({ status: "error", message: 'No service requests found' });
+            return;
+
         }
 
         // 5. Send success response with service requests
@@ -192,15 +205,19 @@ app.post('/getallservices', loginCheck, async (req, res) => {
         const email = req.user.email;
 
         // 3. Find user by ID (using async/await for database operations)
-        const user = await User.findOne(email);
+        const user = await User.findOne({email});
         if (!user) {
             res.status(404).json({ status: "error", message: 'User not found' });
+            return;
+
         }
 
         // 4. Find all services (using async/await for database operations)
         const services = await Services.find();
         if (!services) {
             res.status(404).json({ status: "error", message: 'No services found' });
+            return;
+
         }
 
         // 5. Send success response with services
@@ -218,12 +235,14 @@ app.post("/addservice", loginCheck, async (req, res) => {
         const email = req.user.email;
         console.log(email);
         // 3. Find user by ID (using async/await for database operations)
-        const user = await User.findOne(email);
+        const user = await User.findOne({email});
 
         console.log(user);
 
         if (!user) {
             res.status(404).json({ status: "error", message: 'User not found' });
+            return;
+
         }
 
         // 4. Create new service (using async/await for database operations)
@@ -244,10 +263,12 @@ app.post("/addservice", loginCheck, async (req, res) => {
 app.post('/deleteservicerequest', loginCheck, async (req, res) => {
     try {
         const email = req.user.email;
-        const user = await User.findOne(email);
+        const user = await User.findOne({email});
 
         if (!user) {
             return res.status(404).json({ status: "error", message: 'User not found or not authorized' });
+            return;
+
         }
 
         const servicerequestId = req.body.servicerequestId;
@@ -269,9 +290,11 @@ app.post('/editservicerequest', loginCheck, async (req, res) => {
         const email = req.user.email;
 
         // 3. Find user by ID (using async/await for database operations)
-        const user = await User.findOne(email);
+        const user = await User.findOne({email});
         if (!user) {
             res.status(404).json({ status: "error", message: 'User not found' });
+            return;
+
         }
 
         // 4. Create new service request (using async/await for database operations)
@@ -303,10 +326,12 @@ app.post('/editservicerequest', loginCheck, async (req, res) => {
 app.post("/approveServiceRequest", loginCheck, async (req, res) => {
     try {
         const email = req.user.email;
-        const user = await User.findOne(email);
+        const user = await User.findOne({email});
 
         if (!user) {
             return res.status(404).json({ status: "error", message: 'User not found or not authorized' });
+            return;
+
         }
 
         const {servicerequestId, arrivaltime, endtime} = req.body;
@@ -325,10 +350,12 @@ app.post("/approveServiceRequest", loginCheck, async (req, res) => {
 app.post("/editarrivalendtime", loginCheck, async (req, res) => {
     try {
         const email = req.user.email;
-        const user = await User.findOne(email);
+        const user = await User.findOne({email});
 
         if (!user) {
             return res.status(404).json({ status: "error", message: 'User not found or not authorized' });
+            return;
+
         }
 
         const {servicerequestId, arrivaltime, endtime} = req.body;
@@ -346,20 +373,28 @@ app.post("/editarrivalendtime", loginCheck, async (req, res) => {
 
 // get user details of other user
 app.post("/getuserdetails", loginCheck, async (req, res) => {
+    console.log("sdf");
     try {
         const email = req.user.email;
-        const user = await User.findOne(email);
+        const user = await User.findOne({email});
 
         if (!user) {
             return res.status(404).json({ status: "error", message: 'User not found or not authorized' });
+            return;
+
         }
 
         const Email = req.body.email;
-        const otherUser = await User.findOne(Email);
+        console.log("asdsa");
+        const otherUser = await User.findOne({Email});
+
+        console.log(otherUser, "sdf");
 
         if (!otherUser) {
             return res.status(404).json({ status: "error", message: 'User not found' });
+            return;
         }
+
 
         res.status(200).json({ status: "success", data: otherUser });
     } catch (error) {
@@ -372,7 +407,7 @@ app.post("/getuserdetails", loginCheck, async (req, res) => {
 app.post("/addeditrating", loginCheck, async (req, res) => {
     try {
         const email = req.user.email;
-        const user = await User.findOne(email);
+        const user = await User.findOne({email});
 
         if (!user) {
             return res.status(404).json({ status: "error", message: 'User not found or not authorized' });
