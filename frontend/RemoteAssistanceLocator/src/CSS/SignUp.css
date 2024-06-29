@@ -77,3 +77,10 @@ button[disabled] {
     color: red;
     font-size: .9rem;
 }
+
+.signup-footer{
+    display: flex;
+    margin-block: 1rem;
+    margin-top: 2rem;
+    margin-left: 2.2rem;
+}  
