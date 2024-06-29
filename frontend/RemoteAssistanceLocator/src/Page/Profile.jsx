@@ -1,6 +1,6 @@
-import Header from "../Component/Header.jsx";
 import React, { useEffect, useState } from 'react';
 import '../CSS/Profile.css';
+import fetchData from "../functions/fetchdata.js";
 
 function Profile() {
   const [userDetails, setUserDetails] = useState(null);
@@ -9,17 +9,14 @@ function Profile() {
   useEffect(() => {
     const fetchUserDetails = async () => {
       try {
-        const response = await fetch('http://localhost:3000/getuserdetails', {
-          headers: {
-            method: `POST`, 
-            Authorization: `eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY2N2ZmNTA5MjJhYzkzZTBlYTRiOTU2NyIsImlhdCI6MTcxOTY2MTg0MCwiZXhwIjoxNzE5NzQ4MjQwfQ.jNbgHc4_PDNryUdxDi3FZajO46UqF2GDvHYT5Wl3jE8`, // Replace with your actual token
-          },
-        });
-        let result = await response.json();
-        console.log('User Details Response:', result.data);
-        setUserDetails(response.data.data);
-        // Uncomment if services are returned as part of user details
-        // setServiceHistory(response.data.data.services);
+        let headersList = {
+          "Accept": "*/*",
+          "Authorization": localStorage.getItem("token")
+        }
+
+        const response = await fetchData("http://localhost:3000/getuserdetails", headersList,{},"POST");
+        console.log('User Details Response:', response.data);
+        setUserDetails(response.data);
       } catch (error) {
         console.error('Error fetching user details:', error);
       }
@@ -44,7 +41,6 @@ function Profile() {
               <span>4.9</span> ⭐
             </div>
             <button className="btn">Send message</button>
-            <button className="btn">Contacts</button>
             <button className="btn">Report user</button>
           </div>
         </div>

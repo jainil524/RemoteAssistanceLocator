@@ -5,12 +5,15 @@ const serviceRequestSchema = new Schema({
     user: { type: Schema.Types.ObjectId, ref: 'User', required: true },
     serviceProvider: { type: Schema.Types.ObjectId, ref: 'User' },
     location: {
+        type: {
+            type: String,
+            default: 'Point'
+        },
         coordinates: { type: [Number], required: true } // [longitude, latitude]
     },
     date: { type: Date, required: true },
-    time: { type: String, required: true },
     rating: { type: Number, min: 0, max: 5 },
-    typeOfAssistance: { type: String, required: true },
+    serviceTaken: { type: Schema.Types.ObjectId, ref: 'Services', required: true },
     status: { type: String, enum: ['Pending', 'Accepted', 'In Progress', 'Completed', 'Cancelled'], default: 'Pending' },
     createdAt: { type: Date, default: Date.now },
     updatedAt: { type: Date, default: Date.now }

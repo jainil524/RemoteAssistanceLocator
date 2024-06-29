@@ -6,18 +6,19 @@
     box-shadow: 0 2px 48px rgba(0, 0, 0, 0.1);
 }
 
-.history table{
+.history table {
     width: 100%;
     border: #007bff 2px solid;
     border-collapse: collapse;
 }
 
-.history table td,th{
+.history table td,
+.history table th {
     border: #007bff 2px solid;
- 
+
 }
 
-.history table tr{
+.history table tr {
     border: #007bff 2px solid;
     border-collapse: collapse;
 }
@@ -171,6 +172,10 @@
     background-color: #fff;
     border-radius: 10px;
     box-shadow: 0 2px 48px rgba(0, 0, 0, 0.1)
+}
+
+.section h3 {
+    margin-bottom: 1rem;
 }
 
 .work-item,
