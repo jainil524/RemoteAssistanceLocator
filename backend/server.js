@@ -339,6 +339,9 @@ app.post("/approveServiceRequest", loginCheck, async (req, res) => {
         // update service status
         await ServiceRequest.findByIdAndUpdate(servicerequestId, { status: 'Accepted' , arrivalTime: arrivaltime, endTime: endtime});
 
+        let OTPNotification = new Notification({ user: user._id, serviceProvider: servicerequestId, NotificationType: 'otp', message: `Service request from ${user.name} is accepted` });
+        await OTPNotification.save();
+        
         res.status(200).json({ status: "success", message: 'Service request approved successfully' });
     } catch (error) {
         console.error(error);

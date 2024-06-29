@@ -15,8 +15,8 @@ const serviceRequestSchema = new Schema({
     rating: { type: Number, min: 0, max: 5 },
     serviceTaken: { type: Schema.Types.ObjectId, ref: 'Services', required: true },
     status: { type: String, enum: ['Pending', 'Accepted', 'In Progress', 'Completed', 'Cancelled'], default: 'Pending' },
-    arrivalTime: { type: Date },
-    edndTime: { type: Date },
+    arrivalTime: { type: String },
+    edndTime: { type: String },
     createdAt: { type: Date, default: Date.now },
     updatedAt: { type: Date, default: Date.now }
 });
