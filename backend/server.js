@@ -12,6 +12,9 @@ const findNearbyUsers = require('./utils/findDistanceFromUser');
 const loginCheck = require('./MiddleWare/loginCheck');
 
 const User = new require('./model/Users/User');
+const ServiceRequest = new require('./model/Services/ServiceRequest');
+const Services = new require('./model/Services/Sevices');
+const Notification = new require('./model/Notifications/Notifications');  
 
 // Load environment variables
 require('dotenv').config();
@@ -35,7 +38,7 @@ app.post('/login', async (req, res) => {
         const { email, password } = req.body;
 
         // 3. Find user by email (using async/await for database operations)
-        const user = await User.findOne({ email: email });
+        const user = await User.findOne({email});
         if (!user) {
             res.status(401).json({ status: "error", message: 'No user found with this email' });
         }
@@ -127,7 +130,21 @@ app.post('/requestservice', loginCheck, async (req, res) => {
             res.status(404).json({ status: "error", message: 'User not found' });
         }
 
-        let nearbyUsers = await findNearbyUsers(user.location.coordinates[0], user.location.coordinates[1]);
+        // 4. Create new service request (using async/await for database operations)
+        const { location, date, serviceTaken } = req.body;
+        location.type = 'Point';
+        location.coordinates = [location.longitude, location.latitude];
+        
+        const serviceRequest = new ServiceRequest({ user: user._id, location, date, serviceTaken });
+        await serviceRequest.save();
+
+        let nearbyUsers = await findNearbyUsers(user.location.coordinates[0], user.location.coordinates[1], 20000);
+
+        nearbyUsers.forEach(async (nearbyUser) => {
+            const notification = new Notification({ user: user._id, serviceProvider: nearbyUser._id, message: `Service request from ${user.name}` });
+            await notification.save();
+        });
+
 
         // 4. Send success response with user details
         res.status(200).json({ status: "success", data: nearbyUsers });
@@ -136,6 +153,94 @@ app.post('/requestservice', loginCheck, async (req, res) => {
         res.status(500).json({ status: "error", message: 'Internal server error' });
     }
 
+});
+
+// get all service requests
+app.post('/getallservicerequests', loginCheck, async (req, res) => {
+    try {
+
+        // 2. Get user ID from JWT
+        const email = req.user.email;
+
+        // 3. Find user by ID (using async/await for database operations)
+        const user = await User.findOne(email);
+        console.log(user);
+        if (!user) {
+            res.status(404).json({status: "error",message: 'User not found'});
+        }
+
+        // 4. Find all service requests (using async/await for database operations)
+        const serviceRequests = await ServiceRequest.find({ user: user._id });
+        if (!serviceRequests) {
+            res.status(404).json({status: "error",message: 'No service requests found'});
+        }
+
+        // 5. Send success response with service requests
+        res.status(200).json({status: "success",data: serviceRequests});
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({status: "error",message: 'Internal server error'});
+    }
+
+});
+
+// get all services
+app.post('/getallservices', loginCheck, async (req, res) => {
+    try {
+
+        // 2. Get user ID from JWT
+        const email = req.user.email;
+
+        // 3. Find user by ID (using async/await for database operations)
+        const user = await User.findOne(email);
+        if (!user) {
+            res.status(404).json({status: "error",message: 'User not found'});
+        }
+
+        // 4. Find all services (using async/await for database operations)
+        const services = await Services.find();
+        if (!services) {
+            res.status(404).json({status: "error",message: 'No services found'});
+        }
+
+        // 5. Send success response with services
+        res.status(200).json({status: "success",data: services});
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({status: "error",message: 'Internal server error'});
+    }
+
+});
+
+app.post("/addservice", loginCheck, async (req, res) => {
+    try {
+        // 2. Get user ID from JWT
+        const email = req.user.email;
+        console.log(email);
+        // 3. Find user by ID (using async/await for database operations)
+        const user = await User.findOne(email);
+
+        console.log(user);
+
+        if (!user) {
+            res.status(404).json({status: "error",message: 'User not found'});
+        }
+
+        // 4. Create new service (using async/await for database operations)
+        const { serviceName, description, price } = req.body;
+        const service = new Services({ serviceName, description, price });
+
+        await service.save();
+
+        // 5. Send success response with service details
+        res.status(200).json({status: "success",message: "services added successfully" ,data: service});
+    } catch (error) {
+        res.status(500).json({status: "error",message: 'Internal server error'});
+        console.error(error);
+    }
+});
+
+app.post("/deleteservice", loginCheck, async (req, res) => {
 });
 
 
