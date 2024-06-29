@@ -6,7 +6,16 @@ const userSchema = new Schema({
     name: { type: String, required: true },
     email: { type: String, required: true, unique: true },
     password: { type: String, required: true },
-    phone: { type: String, required: true },
+    phone: {
+        type: String,
+        validate: {
+            validator: function (v) {
+                return /\d{10}/.test(v);
+            },
+            message: props => `${props.value} is not a valid phone number!`
+        },
+        required: true
+    },
     role: {
         type: String,
         enum: ['consumer', 'provider', 'admin'],
@@ -14,7 +23,7 @@ const userSchema = new Schema({
         required: true
     },
     location: {
-        coordinates: { type: [Number], required: false } // [longitude, latitude]
+        type: [Number], required: false // [longitude, latitude]
     },
     services: {
         type: [{ type: Schema.Types.ObjectId, ref: 'Services' }],
