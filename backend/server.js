@@ -144,6 +144,7 @@ app.post('/requestservice', loginCheck, async (req, res) => {
         location.type = 'Point';
         location.coordinates = [location.longitude, location.latitude];
 
+
         const serviceRequest = new ServiceRequest({ user: user._id, location, date, serviceTaken });
         await serviceRequest.save();
 
@@ -190,8 +191,10 @@ app.post('/getallservicerequests', loginCheck, async (req, res) => {
 
         // 5. Send success response with service requests
         res.status(200).json({ status: "success", data: serviceRequests });
+        res.status(200).json({ status: "success", data: serviceRequests });
     } catch (error) {
         console.error(error);
+        res.status(500).json({ status: "error", message: 'Internal server error' });
         res.status(500).json({ status: "error", message: 'Internal server error' });
     }
 
@@ -222,8 +225,10 @@ app.post('/getallservices', loginCheck, async (req, res) => {
 
         // 5. Send success response with services
         res.status(200).json({ status: "success", data: services });
+        res.status(200).json({ status: "success", data: services });
     } catch (error) {
         console.error(error);
+        res.status(500).json({ status: "error", message: 'Internal server error' });
         res.status(500).json({ status: "error", message: 'Internal server error' });
     }
 
@@ -253,7 +258,9 @@ app.post("/addservice", loginCheck, async (req, res) => {
 
         // 5. Send success response with service details
         res.status(200).json({ status: "success", message: "services added successfully", data: service });
+        res.status(200).json({ status: "success", message: "services added successfully", data: service });
     } catch (error) {
+        res.status(500).json({ status: "error", message: 'Internal server error' });
         res.status(500).json({ status: "error", message: 'Internal server error' });
         console.error(error);
     }

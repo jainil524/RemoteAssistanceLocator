@@ -5,7 +5,6 @@ function PopUp(props) {
     function hide(event) {
         if (event.target.id == "popUpContainer") {
             props.hidefunction();
-            console.log("hello")
         }
     }
 

@@ -83,7 +83,6 @@ export default function SignUp() {
             }
         }
     };
-
     function getLocation() {
         if ("geolocation" in navigator) {
             navigator.geolocation.getCurrentPosition(function (position) {
@@ -96,7 +95,6 @@ export default function SignUp() {
             console.log("Geolocation is not available in your browser.");
         }
     }
-
 
     return (
         <div className="signup">
