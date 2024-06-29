@@ -1,22 +1,45 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
+import axios from 'axios';
 import './ProfileCard.css';
 
 function ProfileCard() {
-  const serviceHistory = [
-    { id: 1, date: '2024-01-01', service: 'Service A', provider: 'Provider A' },
-    { id: 2, date: '2024-02-15', service: 'Service B', provider: 'Provider B' },
-    { id: 3, date: '2024-03-20', service: 'Service C', provider: 'Provider C' },
-    // Add more services as needed
-  ];
+  const [userDetails, setUserDetails] = useState(null);
+  const [serviceHistory, setServiceHistory] = useState([]);
+
+  useEffect(() => {
+    const fetchUserDetails = async () => {
+      try {
+        const response = await fetch('http://localhost:3000/getuserdetails', {
+          headers: {
+            method: `POST`, 
+            Authorization: `eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY2N2ZmNTA5MjJhYzkzZTBlYTRiOTU2NyIsImlhdCI6MTcxOTY2MTg0MCwiZXhwIjoxNzE5NzQ4MjQwfQ.jNbgHc4_PDNryUdxDi3FZajO46UqF2GDvHYT5Wl3jE8`, // Replace with your actual token
+          },
+        });
+        let result = await response.json();
+        console.log('User Details Response:', result.data);
+        setUserDetails(response.data.data);
+        // Uncomment if services are returned as part of user details
+        // setServiceHistory(response.data.data.services);
+      } catch (error) {
+        console.error('Error fetching user details:', error);
+      }
+    };
+
+    fetchUserDetails();
+  }, []);
+
+  if (!userDetails) {
+    return <div>Loading...</div>;
+  }
 
   return (
     <div className="profile-card">
       <div className="profile-content">
         <div className="profile-info">
           <div className="profile-details">
-            <h1>Dhruv Raval</h1>
-            <p>Mehsana, GJ</p>
-            <h3>Software Engineer</h3>
+            <h1>{userDetails.name}</h1>
+            <p>{userDetails.location.coordinates.join(', ')}</p>
+            <h3>{userDetails.role}</h3>
             <div className="ratings">
               <span>4.9</span> ⭐
             </div>
@@ -31,52 +54,52 @@ function ProfileCard() {
             <h3>Address</h3>
             <div className="work-item">
               <h4></h4>
-              <p>15, New Asopalav society</p>
-              <p>Gujarat, IN 384001</p>
+              <p>{userDetails.address || '15, New Asopalav society, Gujarat, IN 384001'}</p>
             </div>
           </div>
           <div className="section contact">
             <h3>Contact Information</h3>
             <div className="contact-item">
-              <label htmlFor="phone">Phone: +1 123 456 7890</label>
+              <label htmlFor="phone">Phone: {userDetails.phone}</label>
             </div>
             <div className="contact-item">
-              <label htmlFor="email">E-mail: dhruv.raval.official@gmail.com</label>
-            </div>
-            <div className="contact-item">
-              <label htmlFor="site">Site: www.dhruvraval.com</label>
+              <label htmlFor="email">E-mail: {userDetails.email}</label>
             </div>
           </div>
         </div>
         <div className="profile-sections">
-             <div className="section history">
+          <div className="section history">
             <h3>History</h3>
             <table>
-              <tr>
-                <th>Date</th>
-                <th>Service</th>
-                <th>Provider</th>
-              </tr>
-              {serviceHistory.map(service => (
-              <tr key={service.id}>
-                <td>{service.date}</td>
-                <td>{service.service}</td>
-                <td>{service.provider}</td>
-              </tr>
-               ))}
+              <thead>
+                <tr>
+                  <th>Date</th>
+                  <th>Service</th>
+                  <th>Provider</th>
+                </tr>
+              </thead>
+              <tbody>
+                {serviceHistory.map(service => (
+                  <tr key={service.id}>
+                    <td>{service.date}</td>
+                    <td>{service.service}</td>
+                    <td>{service.provider}</td>
+                  </tr>
+                ))}
+              </tbody>
             </table>
           </div>
 
           <div className="section service">
             <h3>Service</h3>
             <table>
-              <tr>
-              </tr>
-              {serviceHistory.map(service => (
-              <tr key={service.id}>
-                <td>{service.service}</td>
-              </tr>
-               ))}
+              <tbody>
+                {serviceHistory.map(service => (
+                  <tr key={service.id}>
+                    <td>{service.service}</td>
+                  </tr>
+                ))}
+              </tbody>
             </table>
           </div>
         </div>
