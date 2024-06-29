@@ -308,9 +308,10 @@ app.post("/approveServiceRequest", loginCheck, async (req, res) => {
             return res.status(404).json({ status: "error", message: 'User not found or not authorized' });
         }
 
-        const servicerequestId = req.body.servicerequestId;
+        const {servicerequestId, arrivaltime, endtime} = req.body;
+
         // update service status
-        await ServiceRequest.findByIdAndUpdate(servicerequestId, { status: 'Accepted' });
+        await ServiceRequest.findByIdAndUpdate(servicerequestId, { status: 'Accepted' , arrivalTime: arrivaltime, endTime: endtime});
 
         res.status(200).json({ status: "success", message: 'Service request approved successfully' });
     } catch (error) {
@@ -318,6 +319,80 @@ app.post("/approveServiceRequest", loginCheck, async (req, res) => {
         res.status(500).json({ status: "error", message: 'Internal server error' });
     }
 });
+
+// edit arrival time and end time of service request
+app.post("/editarrivalendtime", loginCheck, async (req, res) => {
+    try {
+        const email = req.user.email;
+        const user = await User.findOne(email);
+
+        if (!user) {
+            return res.status(404).json({ status: "error", message: 'User not found or not authorized' });
+        }
+
+        const {servicerequestId, arrivaltime, endtime} = req.body;
+
+        // update service status
+        await ServiceRequest.findByIdAndUpdate(servicerequestId, { arrivalTime: arrivaltime, endTime: endtime });
+
+        res.status(200).json({ status: "success", message: 'Service request updated successfully' });
+
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ status: "error", message: 'Internal server error' });
+    }
+});
+
+// get user details of other user
+app.post("/getuserdetails", loginCheck, async (req, res) => {
+    try {
+        const email = req.user.email;
+        const user = await User.findOne(email);
+
+        if (!user) {
+            return res.status(404).json({ status: "error", message: 'User not found or not authorized' });
+        }
+
+        const Email = req.body.email;
+        const otherUser = await User.findOne(Email);
+
+        if (!otherUser) {
+            return res.status(404).json({ status: "error", message: 'User not found' });
+        }
+
+        res.status(200).json({ status: "success", data: otherUser });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ status: "error", message: 'Internal server error' });
+    }
+});
+
+// add rate to service request
+app.post("/addeditrating", loginCheck, async (req, res) => {
+    try {
+        const email = req.user.email;
+        const user = await User.findOne(email);
+
+        if (!user) {
+            return res.status(404).json({ status: "error", message: 'User not found or not authorized' });
+        }
+
+        const {servicerequestId, rating} = req.body;
+
+        // update service status
+        await ServiceRequest.findByIdAndUpdate(servicerequestId, { rating: rating });
+
+        res.status(200).json({ status: "success", message: 'Rating added successfully' });
+
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ status: "error", message: 'Internal server error' });
+    }
+});
+
+
+
+
 
 
 
