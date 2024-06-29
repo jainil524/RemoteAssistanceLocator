@@ -8,6 +8,7 @@ const connectDB = require('./model/dbconnecion');
 const bodyParser = require('body-parser');
 const jwt = require('jsonwebtoken');
 const {hashPassword, comparePassword} = require('./utils/hashPassword');
+const findNearbyUsers = require('./utils/findDistanceFromUser');
 const loginCheck = require('./MiddleWare/loginCheck');
 
 const User = new require('./model/Users/User');
@@ -122,19 +123,16 @@ app.post('/requestservice', loginCheck, async (req, res) => {
         // 3. Find user by ID (using async/await for database operations)
         const user = await User.findOne(email);
         if (!user) {
-            res.status(404);
-            res.json({status: "error",message: 'User not found'});
+            res.status(404).json({status: "error",message: 'User not found'});
         }
 
-
+        let nearbyUsers = await findNearbyUsers(user.location.coordinates[0], user.location.coordinates[1]);
 
         // 4. Send success response with user details
-        res.status(200);
-        res.json({status: "success",data: user});
+        res.status(200).json({status: "success",data: nearbyUsers});
     } catch (error) {
         console.error(error);
-        res.status(500);
-        res.json({status: "error",message: 'Internal server error'});
+        res.status(500).json({status: "error",message: 'Internal server error'});
     }
 
 });
