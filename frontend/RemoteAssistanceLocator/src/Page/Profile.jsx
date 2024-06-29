@@ -37,11 +37,6 @@ function Profile() {
             <h1>{userDetails.name}</h1>
             <p>{userDetails.location.coordinates.join(', ')}</p>
             <h3>{userDetails.role}</h3>
-            <div className="ratings">
-              <span>4.9</span> ⭐
-            </div>
-            <button className="btn">Send message</button>
-            <button className="btn">Report user</button>
           </div>
         </div>
         <hr />
