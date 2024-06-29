@@ -1,35 +1,30 @@
-import { useState } from "react";
+import {useState} from "react";
 import '../CSS/SignUp.css';
 import Field from "../Component/Field";
+import {useNavigate} from "react-router-dom";
+import fetchData from "../functions/fetchdata.js";
 
 export default function SignUp() {
-    const [firstName, setFirstName] = useState("");
-    const [lastName, setLastName] = useState("");
+    const [name, setName] = useState("");
     const [email, setEmail] = useState("");
-    const [password, setPassword] = useState({
-        value: "",
-        isTouched: false,
-    });
+    const [phone, setPhone] = useState("");
+    const [password, setPassword] = useState("");
     const [role, setRole] = useState("role");
     const [errors, setErrors] = useState({
         firstName: "",
-        lastName: "",
         email: "",
         password: "",
-        role: ""
+        role: "",
+        phone: ""
     });
+    const navigate = useNavigate();
 
     const validateForm = () => {
         let isValid = true;
-        const newErrors = { firstName: "", lastName: "", email: "", password: "", role: "" };
+        const newErrors = {firstName: "", lastName: "", email: "", password: "", role: ""};
 
-        if (!firstName) {
+        if (!name) {
             newErrors.firstName = "First name is required.";
-            isValid = false;
-        }
-
-        if (!lastName) {
-            newErrors.lastName = "Last name is required.";
             isValid = false;
         }
 
@@ -38,8 +33,12 @@ export default function SignUp() {
             isValid = false;
         }
 
-        if (password.value.length < 8) {
+        if (password.length < 8) {
             newErrors.password = "Password must be at least 8 characters.";
+            isValid = false;
+        }
+        if (phone.length < 8) {
+            newErrors.phone = "Please enter a valid phone number.";
             isValid = false;
         }
 
@@ -52,10 +51,33 @@ export default function SignUp() {
         return isValid;
     };
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
         if (validateForm()) {
-            alert("Account created!");
+            let headersList = {
+                "Accept": "*/*",
+                "User-Agent": "Thunder Client (https://www.thunderclient.com)",
+                "Content-Type": "application/json"
+            }
+
+            let bodyContent = JSON.stringify({
+                "name": name,
+                "email": email,
+                "phone": phone,
+                "password": password,
+                "role": role,
+                "location": {
+                    "type": "Point",
+                    "coordinates": [-13.42493130000003, 52.50074619999999]
+                }
+            });
+
+            let data = await fetchData("http://localhost:3000/register", headersList, bodyContent, "POST");
+
+            if (data.status == "success") {
+                console.log(data.status)
+                navigate("/login");
+            }
         }
     };
 
@@ -65,23 +87,16 @@ export default function SignUp() {
                 <fieldset>
                     <h2>Sign Up</h2>
                     <Field
-                        label="First Name"
-                        value={firstName}
-                        onChange={(e) => setFirstName(e.target.value)}
+                        label="Name"
+                        value={name}
+                        onChange={(e) => setName(e.target.value)}
                         name="firstName"
                         type="text"
-                        placeholder="First name"
+                        placeholder="Name"
                         error={errors.firstName}
                     />
-                    <Field
-                        label="Last Name"
-                        value={lastName}
-                        onChange={(e) => setLastName(e.target.value)}
-                        name="lastName"
-                        type="text"
-                        placeholder="Last name"
-                        error={errors.lastName}
-                    />
+                    <Field label={"Phone"} name={"Phone"} value={phone} placeholder={"Phone number"}
+                           error={errors.phone} onChange={(e) => setPhone(e.target.value)}/>
                     <Field
                         label="Email"
                         value={email}
@@ -92,9 +107,9 @@ export default function SignUp() {
                         error={errors.email}
                     />
                     <Field
-                        value={password.value}
+                        value={password}
                         type="password"
-                        onChange={(e) => setPassword({ ...password, value: e.target.value })}
+                        onChange={(e) => setPassword(e.target.value)}
                         name="password"
                         placeholder="Password"
                         label="Password"
@@ -104,14 +119,12 @@ export default function SignUp() {
                         <label>Role <sup>*</sup></label>
                         <select value={role} onChange={(e) => setRole(e.target.value)}>
                             <option value="role">Role</option>
-                            <option value="individual">Individual</option>
-                            <option value="business">Business</option>
+                            <option value="consumer">User</option>
+                            <option value="provider">Business</option>
                         </select>
                         {errors.role && <p className="error">{errors.role}</p>}
                     </div>
-                    <button type="submit">
-                        Register
-                    </button>
+                    <button type="submit">Register</button>
                 </fieldset>
             </form>
         </div>
