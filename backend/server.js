@@ -4,7 +4,7 @@ const PORT = 3000;
 
 const connectDB = require('./model/dbconnecion');
 
-
+const cors = require("cors");
 const bodyParser = require('body-parser');
 const jwt = require('jsonwebtoken');
 const { hashPassword, comparePassword } = require('./utils/hashPassword');
@@ -25,6 +25,7 @@ connectDB();
 // Middleware for body-parser
 app.use(bodyParser.json());
 app.use(express.urlencoded({ extended: true }));
+app.use(cors());
 
 // Routes
 
