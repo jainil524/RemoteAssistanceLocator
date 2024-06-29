@@ -14,7 +14,7 @@ const loginCheck = require('./MiddleWare/loginCheck');
 const User = new require('./model/Users/User');
 const ServiceRequest = new require('./model/Services/ServiceRequest');
 const Services = new require('./model/Services/Sevices');
-const Notification = new require('./model/Notifications/Notifications');  
+const Notification = new require('./model/Notifications/Notifications');
 
 // Load environment variables
 require('dotenv').config();
@@ -38,7 +38,7 @@ app.post('/login', async (req, res) => {
         const { email, password } = req.body;
 
         // 3. Find user by email (using async/await for database operations)
-        const user = await User.findOne({email});
+        const user = await User.findOne({ email });
         if (!user) {
             res.status(401).json({ status: "error", message: 'No user found with this email' });
         }
@@ -131,10 +131,11 @@ app.post('/requestservice', loginCheck, async (req, res) => {
         }
 
         // 4. Create new service request (using async/await for database operations)
-        const { location, date, serviceTaken } = req.body;
+        let { location, date, serviceTaken } = req.body;
+        console.log(req.body);
         location.type = 'Point';
         location.coordinates = [location.longitude, location.latitude];
-        
+
         const serviceRequest = new ServiceRequest({ user: user._id, location, date, serviceTaken });
         await serviceRequest.save();
 
@@ -164,22 +165,21 @@ app.post('/getallservicerequests', loginCheck, async (req, res) => {
 
         // 3. Find user by ID (using async/await for database operations)
         const user = await User.findOne(email);
-        console.log(user);
         if (!user) {
-            res.status(404).json({status: "error",message: 'User not found'});
+            res.status(404).json({ status: "error", message: 'User not found' });
         }
 
         // 4. Find all service requests (using async/await for database operations)
         const serviceRequests = await ServiceRequest.find({ user: user._id });
         if (!serviceRequests) {
-            res.status(404).json({status: "error",message: 'No service requests found'});
+            res.status(404).json({ status: "error", message: 'No service requests found' });
         }
 
         // 5. Send success response with service requests
-        res.status(200).json({status: "success",data: serviceRequests});
+        res.status(200).json({ status: "success", data: serviceRequests });
     } catch (error) {
         console.error(error);
-        res.status(500).json({status: "error",message: 'Internal server error'});
+        res.status(500).json({ status: "error", message: 'Internal server error' });
     }
 
 });
@@ -194,20 +194,20 @@ app.post('/getallservices', loginCheck, async (req, res) => {
         // 3. Find user by ID (using async/await for database operations)
         const user = await User.findOne(email);
         if (!user) {
-            res.status(404).json({status: "error",message: 'User not found'});
+            res.status(404).json({ status: "error", message: 'User not found' });
         }
 
         // 4. Find all services (using async/await for database operations)
         const services = await Services.find();
         if (!services) {
-            res.status(404).json({status: "error",message: 'No services found'});
+            res.status(404).json({ status: "error", message: 'No services found' });
         }
 
         // 5. Send success response with services
-        res.status(200).json({status: "success",data: services});
+        res.status(200).json({ status: "success", data: services });
     } catch (error) {
         console.error(error);
-        res.status(500).json({status: "error",message: 'Internal server error'});
+        res.status(500).json({ status: "error", message: 'Internal server error' });
     }
 
 });
@@ -223,7 +223,7 @@ app.post("/addservice", loginCheck, async (req, res) => {
         console.log(user);
 
         if (!user) {
-            res.status(404).json({status: "error",message: 'User not found'});
+            res.status(404).json({ status: "error", message: 'User not found' });
         }
 
         // 4. Create new service (using async/await for database operations)
@@ -233,9 +233,9 @@ app.post("/addservice", loginCheck, async (req, res) => {
         await service.save();
 
         // 5. Send success response with service details
-        res.status(200).json({status: "success",message: "services added successfully" ,data: service});
+        res.status(200).json({ status: "success", message: "services added successfully", data: service });
     } catch (error) {
-        res.status(500).json({status: "error",message: 'Internal server error'});
+        res.status(500).json({ status: "error", message: 'Internal server error' });
         console.error(error);
     }
 });
