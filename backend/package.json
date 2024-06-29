@@ -2,10 +2,17 @@
   "name": "backend",
   "version": "1.0.0",
   "description": "Creating a Remote Assistance Locator system involves integrating technologies that facilitate efficient communication, coordination, and support between users needing assistance and service providers.",
-  "main": "index.js",
+  "main": "server.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "jainil,kishan,dhruv",
-  "license": "ISC"
+  "license": "ISC",
+  "dependencies": {
+    "body-parser": "^1.20.2",
+    "dotenv": "^16.4.5",
+    "express": "^4.19.2",
+    "jsonwebtoken": "^9.0.2",
+    "nodemon": "^3.1.4"
+  }
 }
