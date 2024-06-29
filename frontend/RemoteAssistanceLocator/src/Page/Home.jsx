@@ -103,7 +103,7 @@ function Home() {
     }
 
 
-    return( services && service.length == 0) ? <div>
+    return services ? <div>
         <div className="container">
             <button onClick={changeStatus}>Request Service</button>
             <input type="text" value={search} placeholder={"Search.."} onChange={e => setSearch(e.target.value)}/>
@@ -112,15 +112,10 @@ function Home() {
         <div className="card-container">
             <h1>Services</h1>
 
-            {
-                services.map((item) => {
-                    
-
-                    return <Card name={item.serviceTaken} assignee={"Not Assigned"} status={item.status} fees={"50"}/>
-                })
-            }
-
-           
+            <Card name={"Plumber"} assignee={"Not Assigned"} status={"Requested"} fees={"50"}/>
+            <Card name={"Electrican"} assignee={"Dhruv Raval"} status={"Accepted"} fees={"50"}/>
+            <Card name={"Driver"} assignee={"Jainil"} status={"Arriving"} fees={"50"}/>
+            <Card name={"Plumber"} assignee={"Kishan"} status={"Accepted"} fees={"50"}/>
         </div>
 
         {
@@ -129,12 +124,9 @@ function Home() {
                     <div className="requestForm">
                         <h2>Request service</h2>
                         <div className="field">
-                            <select value={service} onChange={e => setService(e.target.value)}>
-                                {
-                                    services.map((item) => {
-                                        return <option value={item._id} key={item._id}>{item.description}</option>
-                                    })
-                                }
+                            <select>
+                            <option>Plumber</option>
+                            <option>Electrican</option>
                             </select>
                         </div>
                         <LocalizationProvider dateAdapter={AdapterDayjs}>

@@ -31,3 +31,7 @@
 5) Subscription plan **
 6) Partnerships with Local Businesses ( Future Scope )
 7) OTP Verification
+
+
+// Video Link
+https://drive.google.com/file/d/1ZBq5BJG2VkTEVqHHKNkG_7_-tEa4n8Wd/view?usp=sharing
