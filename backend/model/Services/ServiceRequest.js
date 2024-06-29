@@ -7,6 +7,8 @@ const serviceRequestSchema = new Schema({
     location: {
         coordinates: { type: [Number], required: true } // [longitude, latitude]
     },
+    date: { type: Date, required: true },
+    time: { type: String, required: true },
     rating: { type: Number, min: 0, max: 5 },
     typeOfAssistance: { type: String, required: true },
     status: { type: String, enum: ['Pending', 'Accepted', 'In Progress', 'Completed', 'Cancelled'], default: 'Pending' },
