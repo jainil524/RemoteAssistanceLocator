@@ -1,6 +1,6 @@
 const nodemailer = require('nodemailer');
 
-async function sendEmail(subject, body, recipientEmail) {
+async function sendEmail(subject, message, recipientEmail) {
     try {
         const transporter = nodemailer.createTransport({
             service: 'gmail',
@@ -10,12 +10,15 @@ async function sendEmail(subject, body, recipientEmail) {
             }
         });
 
+        // Construct email body with signature
+        const body = `Dear User,\n\n${message}\n\nThanks,\nDhruv Raval\nTeam of AssistFinder`;
+
         const emailOptions = {
             from: process.env.EMAIL_ADDRESS,
             to: recipientEmail,
             subject: subject,
             text: body,
-            html: body
+            html: `<p>Dear User,</p><p>${message}</p><p>Thanks,<br>Dhruv Raval<br>Team of AssistFinder</p>`
         };
 
         const info = await transporter.sendMail(emailOptions);
