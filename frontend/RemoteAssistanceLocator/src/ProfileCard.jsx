@@ -1,8 +1,8 @@
-import Header from "../Component/Header.jsx";
 import React, { useEffect, useState } from 'react';
-import '../CSS/Profile.css';
+import axios from 'axios';
+import './ProfileCard.css';
 
-function Profile() {
+function ProfileCard() {
   const [userDetails, setUserDetails] = useState(null);
   const [serviceHistory, setServiceHistory] = useState([]);
 
@@ -108,4 +108,4 @@ function Profile() {
   );
 }
 
-export default Profile;
+export default ProfileCard;
