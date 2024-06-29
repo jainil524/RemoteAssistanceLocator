@@ -1,0 +1,71 @@
+.signup {
+    display: flex;
+    flex: 1;
+    height: 100vh;
+    justify-content: center;
+    align-items: center;
+}
+.signup
+fieldset {
+    display: flex;
+    width: 30vw;
+    min-width: 25rem;
+    padding: 16px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    flex-direction: column;
+}
+.signup
+fieldset h2 {
+    text-align: center;
+    margin-bottom: 1rem;
+}
+
+.Field {
+    position: relative;
+    padding-bottom: 24px;
+    display: flex;
+    flex-direction: column;
+    margin-inline: 2rem;
+
+}
+.Field label{
+    font-size: 1.2rem;
+}
+.FieldError {
+    position: absolute;
+    bottom: -.5px;
+    color: red;
+    font-size: 12px;
+}
+
+.Row {
+    display: flex;
+    flex-direction: row;
+}
+
+button {
+    padding: .8rem 2rem;
+    border-radius: 4px;
+    border: 1px solid #ccc;
+    background-color: #5ecad4;
+    color: white;
+    text-transform: capitalize;
+    font-size: 14px;
+    font-weight: bold;
+    cursor: pointer;
+    align-self: center;
+}
+
+button:disabled,
+button[disabled] {
+    border: 1px solid #999999;
+    background-color: #cccccc;
+    color: #666666;
+    cursor: not-allowed;
+}
+
+.error {
+    color: red;
+    font-size: .9rem;
+}

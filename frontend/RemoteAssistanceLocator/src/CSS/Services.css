@@ -1,0 +1,19 @@
+.service-container h1 {
+    text-align: center;
+    margin-block: 1rem;
+}
+
+.service-container {
+    padding: 1rem;
+}
+
+.service-container button {
+    margin: 0;
+    padding: 0.5rem 1rem;
+    text-transform: capitalize;
+}
+
+.service-container-header > input {
+    width: 100%;
+    margin-bottom: 1rem;
+}
