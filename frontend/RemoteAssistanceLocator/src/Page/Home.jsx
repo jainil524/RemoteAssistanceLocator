@@ -27,29 +27,59 @@ function Home() {
     const RequestService = async () => {
         let headersList = {
             "Accept": "*/*",
-            "Authorization": localStorage.getItem("token")
+            "Authorization": localStorage.getItem("token"),
+            "Content-Type": "application/json"
         }
         let body = {
-            location: {
-                latitude: position.latitude,
-                longitude: position.longitude
+            "location": {
+                "latitude": position.latitude,
+                "longitude": position.longitude
             },
-            date: time,
-            serviceTaken: service
+            "date": time,
+            "serviceTaken": service
         };
 
-        let response = await fetchData("http://localhost:3000/requestservice", headersList, body, "POST");
+        // let headersList = {
+        //     "Accept": "*/*",
+        //     "User-Agent": "Thunder Client (https://www.thunderclient.com)",
+        //     "Authorization": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY2ODAwODU2NjIwZmI1OWZmMTdkMTM5MSIsImVtYWlsIjoiY2hpbnRhbkBnbWFpbC5jb20iLCJpYXQiOjE3MTk2NjgyNzcsImV4cCI6MTcxOTc1NDY3N30.u9yEI9VizY0VcBSV2QM8Rx6VGQC5hVkmceGuG0gG55c",
+        //     "Content-Type": "application/json"
+        //    }
+           
+        //    let bodyContent = JSON.stringify({
+        //        "location": {
+        //            "latitude": 23.1735296,
+        //            "longitude": 72.6499328
+        //        },
+        //        "date": "2024-06-06T17:10:00.000Z",
+        //        "serviceTaken": "667ffe1726e1f1e2d76fde1a"
+        //    });
+           
+           let response = await fetch("http://localhost:3000/requestservice", { 
+             method: "POST",
+             body: JSON.stringify(body),
+             headers: headersList
+           });
+           
+           let data = await response.text();
+           console.log(data);
+           
+        console.log(response, body);
         setStatus(false);
     }
 
     const loadData = async () => {
         let headersList = {
             "Accept": "*/*",
-            "Authorization": localStorage.getItem("token")
+            "Authorization": localStorage.getItem("token"),
+            "Content-Type": "application/json"
         }
 
-        let response = await fetchData("http://localhost:3000/getallservices", headersList, {}, "POST")
-        changeServices(response.data);
+        let response1 = await fetchData("http://localhost:3000/getallservices", headersList, JSON.stringify({}), "POST")
+        let response2 = await fetchData("http://localhost:3000/getallservicerequests", headersList, JSON.stringify({}), "POST")
+        changeServices(response2.data);
+
+        console.log(response1, response2);
     }
 
     useEffect(() => {
@@ -73,7 +103,7 @@ function Home() {
     }
 
 
-    return services ? <div>
+    return( services && service.length == 0) ? <div>
         <div className="container">
             <button onClick={changeStatus}>Request Service</button>
             <input type="text" value={search} placeholder={"Search.."} onChange={e => setSearch(e.target.value)}/>
@@ -82,10 +112,15 @@ function Home() {
         <div className="card-container">
             <h1>Services</h1>
 
-            <Card name={"Plumber"} assignee={"Not Assigned"} status={"Requested"} fees={"50"}/>
-            <Card name={"Electrican"} assignee={"Dhruv Raval"} status={"Accepted"} fees={"50"}/>
-            <Card name={"Driver"} assignee={"Jainil"} status={"Arriving"} fees={"50"}/>
-            <Card name={"Plumber"} assignee={"Kishan"} status={"Accepted"} fees={"50"}/>
+            {
+                services.map((item) => {
+                    
+
+                    return <Card name={item.serviceTaken} assignee={"Not Assigned"} status={item.status} fees={"50"}/>
+                })
+            }
+
+           
         </div>
 
         {

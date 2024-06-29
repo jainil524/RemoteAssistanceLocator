@@ -31,13 +31,12 @@
 }
 
 .card-container .card {
-    max-width: min(30rem, 100%);
+    max-width: min(25rem, 100%);
     overflow: hidden;
     display: flex;
     flex-direction: column;
     gap: .5rem;
     padding: 1rem 2rem;
-    padding-right: 8rem;
     box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
 }
 

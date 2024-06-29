@@ -24,7 +24,8 @@ connectDB();
 
 // Middleware for body-parser
 app.use(bodyParser.json());
-app.use(express.urlencoded({ extended: true }));
+app.use(bodyParser.urlencoded({ extended: true }));
+
 app.use(cors());
 
 
@@ -127,6 +128,7 @@ app.post('/getuserdetails', loginCheck, async (req, res) => {
 
 // request a service from service provider who is nearby to the service requester user
 app.post('/requestservice', loginCheck, async (req, res) => {
+    console.log(req.body);
     try {
 
         // 2. Get user ID from JWT
@@ -139,8 +141,10 @@ app.post('/requestservice', loginCheck, async (req, res) => {
             return;
         }
 
-        // 4. Create new service request (using async/await for database operations)
+        // 4. Create new service request (using async/await for database operations
+
         let { location, date, serviceTaken } = req.body;
+        console.log(req.body);
         location.type = 'Point';
         location.coordinates = [location.longitude, location.latitude];
 
@@ -168,36 +172,35 @@ app.post('/requestservice', loginCheck, async (req, res) => {
 // get all service requests
 app.post('/getallservicerequests', loginCheck, async (req, res) => {
     try {
-
-        // 2. Get user ID from JWT
+        // Get user ID from JWT
         const email = decodeToken(req.headers['authorization']).email;
 
-        // 3. Find user by ID (using async/await for database operations)
-        const user = await User.findOne({email});
-        console.log(user);
+        // Find user by email
+        const user = await User.findOne({ email });
         if (!user) {
-            res.status(404).json({ status: "error", message: 'User not found' });
-            return;
-
+            return res.status(404).json({ status: "error", message: 'User not found' });
         }
 
-        // 4. Find all service requests (using async/await for database operations)
+        // Find all service requests for the user
         const serviceRequests = await ServiceRequest.find({ user: user._id });
-        if (!serviceRequests) {
-            res.status(404).json({ status: "error", message: 'No service requests found' });
-            return;
-
+        if (serviceRequests.length === 0) {
+            return res.status(404).json({ status: "error", data: [], message: 'No service requests found' });
         }
 
-        // 5. Send success response with service requests
-        res.status(200).json({ status: "success", data: serviceRequests });
-        res.status(200).json({ status: "success", data: serviceRequests });
+        // Replace serviceTaken by the service name
+        const newServiceRequests = await Promise.all(serviceRequests.map(async (serviceRequest) => {
+            const service = await Services.findById(serviceRequest.serviceTaken);
+            const updatedServiceRequest = serviceRequest.toObject(); // Convert Mongoose document to plain object
+            updatedServiceRequest.serviceTaken = service.serviceName;
+            return updatedServiceRequest;
+        }));
+
+        // Send success response with service requests
+        res.status(200).json({ status: "success", data: newServiceRequests });
     } catch (error) {
         console.error(error);
         res.status(500).json({ status: "error", message: 'Internal server error' });
-        res.status(500).json({ status: "error", message: 'Internal server error' });
     }
-
 });
 
 // get all services
@@ -225,10 +228,8 @@ app.post('/getallservices', loginCheck, async (req, res) => {
 
         // 5. Send success response with services
         res.status(200).json({ status: "success", data: services });
-        res.status(200).json({ status: "success", data: services });
     } catch (error) {
         console.error(error);
-        res.status(500).json({ status: "error", message: 'Internal server error' });
         res.status(500).json({ status: "error", message: 'Internal server error' });
     }
 
@@ -258,9 +259,7 @@ app.post("/addservice", loginCheck, async (req, res) => {
 
         // 5. Send success response with service details
         res.status(200).json({ status: "success", message: "services added successfully", data: service });
-        res.status(200).json({ status: "success", message: "services added successfully", data: service });
     } catch (error) {
-        res.status(500).json({ status: "error", message: 'Internal server error' });
         res.status(500).json({ status: "error", message: 'Internal server error' });
         console.error(error);
     }
