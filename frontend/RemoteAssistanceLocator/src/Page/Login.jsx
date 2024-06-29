@@ -49,7 +49,9 @@ export default function SignUp() {
             });
             let data = await fetchData("http://localhost:3000/login",headersList, bodyContent,"POST");
             if (data.status === "success") {
-                navigate("/home");
+                localStorage.setItem("token", data.token);
+                localStorage.setItem("role", data.role);
+                navigate("/");
             }
         }
     };

@@ -9,7 +9,9 @@ export default function SignUp() {
     const [email, setEmail] = useState("");
     const [phone, setPhone] = useState("");
     const [password, setPassword] = useState("");
+    const [position, setPosition] = useState({ latitude: null, longitude: null });
     const [role, setRole] = useState("role");
+
     const [errors, setErrors] = useState({
         firstName: "",
         email: "",
@@ -53,6 +55,7 @@ export default function SignUp() {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+        console.log(position.latitude);
         if (validateForm()) {
             let headersList = {
                 "Accept": "*/*",
@@ -68,7 +71,7 @@ export default function SignUp() {
                 "role": role,
                 "location": {
                     "type": "Point",
-                    "coordinates": [-13.42493130000003, 52.50074619999999]
+                    "coordinates": [position.latitude, position.longitude]
                 }
             });
 
@@ -80,6 +83,20 @@ export default function SignUp() {
             }
         }
     };
+
+    function getLocation() {
+        if ("geolocation" in navigator) {
+            navigator.geolocation.getCurrentPosition(function (position) {
+                setPosition({
+                    latitude: position.coords.latitude,
+                    longitude: position.coords.longitude,
+                });
+            });
+        } else {
+            console.log("Geolocation is not available in your browser.");
+        }
+    }
+
 
     return (
         <div className="signup">
@@ -115,6 +132,8 @@ export default function SignUp() {
                         label="Password"
                         error={errors.password}
                     />
+
+
                     <div className="Field">
                         <label>Role <sup>*</sup></label>
                         <select value={role} onChange={(e) => setRole(e.target.value)}>
@@ -124,6 +143,11 @@ export default function SignUp() {
                         </select>
                         {errors.role && <p className="error">{errors.role}</p>}
                     </div>
+
+                    <div className="location">
+                        <button type={"button"} onClick={getLocation}>Set Location</button>
+                    </div>
+
                     <button type="submit">Register</button>
                 </fieldset>
             </form>

@@ -1,4 +1,4 @@
-import {useState} from "react";
+import {useEffect, useState} from "react";
 import "../CSS/Home.css";
 import dayjs from 'dayjs';
 import Card from "../Component/Card.jsx";
@@ -7,12 +7,15 @@ import {DemoContainer} from '@mui/x-date-pickers/internals/demo';
 import {AdapterDayjs} from '@mui/x-date-pickers/AdapterDayjs';
 import {LocalizationProvider} from '@mui/x-date-pickers/LocalizationProvider';
 import {DateTimePicker} from '@mui/x-date-pickers/DateTimePicker';
+import checkLogin from "../functions/checkLogin.js";
+import {useNavigate} from "react-router-dom";
 
 function Home() {
     const [search, setSearch] = useState("");
     const [service, setService] = useState("");
     const [time, changeTime] = useState(dayjs('2024-06-30T10:30'));
     const [status, setStatus] = useState(false);
+    const navigat = useNavigate();
 
     function changeStatus() {
         setStatus(!status);
@@ -22,10 +25,18 @@ function Home() {
 
     }
 
+    useEffect(() => {
+            // let data = await fetchData()
+            if (!checkLogin()) {
+                navigat("/login");
+            }
+        },  []
+    )
+
     return <div>
         <div className="container">
             <button onClick={changeStatus}>Request Service</button>
-            <input type="text" value={search} onChange={e => setSearch(e.target.value)}/>
+            <input type="text" value={search} placeholder={"Search.."} onChange={e => setSearch(e.target.value)}/>
         </div>
 
         <div className="card-container">
