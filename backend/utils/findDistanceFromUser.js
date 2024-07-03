@@ -2,7 +2,7 @@ const mongoose = require('mongoose');
 const User = require('../model/Users/User'); // Adjust the path as necessary
 
 
-const findNearbyUsers = async (longitude, latitude, maxDistance=5000) => {
+const findNearbyUsers = async (longitude, latitude, serviceTaken ,maxDistance=5000) => {
     try {
         const users = await User.find({
             $and: {
@@ -15,7 +15,8 @@ const findNearbyUsers = async (longitude, latitude, maxDistance=5000) => {
                         $maxDistance: maxDistance // Distance in meters
                     }
                 },
-                role: 'provider'
+                role: 'provider',
+                services: { "$in": [serviceTaken] }
             }
         });
         return users;

@@ -14,7 +14,7 @@ function Profile() {
           "Authorization": localStorage.getItem("token")
         }
 
-        const response = await fetchData("http://localhost:3000/getuserdetails", headersList,{},"POST");
+        const response = await fetchData("http://localhost:3000/getuserdetails", headersList,null,"GET");
         console.log('User Details Response:', response.data);
         setUserDetails(response.data);
       } catch (error) {
@@ -35,7 +35,7 @@ function Profile() {
         <div className="profile-info">
           <div className="profile-details">
             <h1>{userDetails.name}</h1>
-            <p>{userDetails.location.coordinates.join(', ')}</p>
+            <p><a href={`https://www.google.com/maps/search/${userDetails.location.coordinates.join(', ')}`}>Location</a></p>
             <h3>{userDetails.role}</h3>
             <div className="ratings">
               <span>4.9</span> ⭐
